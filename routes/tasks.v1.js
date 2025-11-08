@@ -4,7 +4,7 @@ const router = express.Router();
 const { v4: uuidv4 } = require("uuid");
 
 const Task = require("../models/taskModel");
-const authenticate = require("../middlewares/authenticate");
+const authenticate = require("../middlewares/authorize");
 const checkTaskAccess = require("../middlewares/checkTaskAccess");
 const checkPremiumFeature = require("../middlewares/checkPremiumFeature");
 const idempotencyMiddleware = require("../middlewares/idempotency");
@@ -102,11 +102,9 @@ router.patch(
     try {
       const { status } = req.body;
       if (!["pending", "in_progress", "completed"].includes(status)) {
-        return res
-          .status(400)
-          .json({
-            error: { code: "VALIDATION_ERROR", message: "Invalid status" },
-          });
+        return res.status(400).json({
+          error: { code: "VALIDATION_ERROR", message: "Invalid status" },
+        });
       }
       const update = await Task.update(req.params.id, { status });
       res.json(update);

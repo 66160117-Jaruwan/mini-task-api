@@ -1,22 +1,19 @@
 // middlewares/errorHandler.js
-module.exports = function errorHandler(err, req, res, next) {
-  console.error(err);
-  // If response already sent
-  if (res.headersSent) return next(err);
+const errorHandler = (err, req, res, next) => {
+  console.error(err.stack); // แสดง Error ใน console
 
-  const status = err.status || 500;
-  const code = err.code || (status === 500 ? "INTERNAL_ERROR" : "ERROR");
-  const message = err.message || "Internal server error";
+  // 1. กำหนด statusCode (ถ้า err ไม่มี .statusCode ให้ใช้ 500)
+  const statusCode = err.statusCode || 500;
 
-  const payload = {
-    error: {
-      code,
-      message,
-      details: err.details || null,
-      timestamp: new Date().toISOString(),
-      path: req.path,
-    },
+  // 2. สร้าง Response format ตามข้อกำหนด
+  const errorResponse = {
+    status: "error",
+    code: err.code || (statusCode === 500 ? "INTERNAL_SERVER_ERROR" : "ERROR"),
+    message: err.message || "An unexpected error occurred",
   };
 
-  res.status(status).json(payload);
+  // 3. ส่ง Response กลับไป
+  res.status(statusCode).json(errorResponse);
 };
+
+module.exports = errorHandler;

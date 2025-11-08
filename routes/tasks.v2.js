@@ -5,7 +5,7 @@ const tasksV1 = require("./tasks.v1"); // reuse handlers where possible
 
 // Example: override GET / to include metadata
 const Task = require("../models/taskModel");
-const authenticate = require("../middlewares/authenticate");
+const authenticate = require("../middlewares/authorize");
 
 router.get("/", authenticate, async (req, res, next) => {
   try {

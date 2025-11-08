@@ -1,4 +1,4 @@
-// middlewares/checkTaskAccess.js
+// 6. middlewares/checkTaskAccess.js
 const Task = require("../models/taskModel");
 
 module.exports = function checkTaskAccess(action) {
@@ -6,46 +6,54 @@ module.exports = function checkTaskAccess(action) {
     try {
       const taskId = req.params.id;
       const task = await Task.findById(taskId);
+
       if (!task) {
-        return res
-          .status(404)
-          .json({
-            error: {
-              code: "NOT_FOUND",
-              message: "Task not found",
-              path: req.path,
-            },
-          });
+        // แก้ไข: โยน Error 404
+        const err = new Error("Task not found");
+        err.statusCode = 404;
+        err.code = "NOT_FOUND";
+        return next(err);
       }
 
-      const user = req.user;
-      // ownerId and assignedTo are stored as strings in DB
-      const ownerId = task.ownerId;
-      const assignedTo = task.assignedTo;
-
-      const isAdmin = user.role === "admin";
-      const isOwner = user.id === ownerId;
-      const isAssignee = user.id === assignedTo;
       const isPublic = !!task.isPublic;
 
-      if (action === "read") {
-        if (isPublic || isOwner || isAssignee || isAdmin) return next();
-      } else if (action === "write") {
-        if (isOwner || isAdmin) return next();
-      } else {
-        // default: deny
+      // 1. เช็ค Public Read ก่อน (สำหรับคนไม่ล็อกอิน)
+      if (action === "read" && isPublic) {
+        return next();
       }
 
-      return res
-        .status(403)
-        .json({
-          error: {
-            code: "ACCESS_DENIED",
-            message: "You do not have permission to perform this action",
-          },
-        });
+      // 2. ถ้า Task ไม่ Public (หรือ Action ไม่ใช่ Read)
+      // "ต้อง" มีการล็อกอิน
+      const user = req.user;
+      if (!user) {
+        const err = new Error(
+          "Authentication required to access this resource"
+        );
+        err.statusCode = 401;
+        err.code = "UNAUTHORIZED";
+        return next(err);
+      }
+
+      // 3. ถ้าล็อกอินแล้ว ค่อยเช็คสิทธิ์ส่วนตัว
+      const isAdmin = user.role === "admin";
+      const isOwner = user.id === task.ownerId;
+      const isAssignee = user.id === task.assignedTo;
+
+      if (action === "read") {
+        if (isOwner || isAssignee || isAdmin) return next();
+      } else if (action === "write") {
+        if (isOwner || isAdmin) return next();
+      }
+
+      // แก้ไข: โยน Error 403 (ถ้าไม่เข้าเงื่อนไข)
+      const err = new Error(
+        "You do not have permission to perform this action"
+      );
+      err.statusCode = 403;
+      err.code = "ACCESS_DENIED";
+      return next(err);
     } catch (err) {
-      next(err);
+      next(err); // ส่ง Error จาก DB (เช่น findById พัง)
     }
   };
 };

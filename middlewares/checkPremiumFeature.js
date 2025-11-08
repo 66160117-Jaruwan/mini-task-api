@@ -1,13 +1,10 @@
 // middlewares/checkPremiumFeature.js
 module.exports = function checkPremiumFeature(req, res, next) {
   const user = req.user;
-  // If admin, allow
   if (user.role === "admin") return next();
 
-  // If creating a task and priority=high in body
   const { priority } = req.body || {};
   if (priority === "high") {
-    // must be premium and subscription not expired
     if (
       user.isPremium &&
       (!user.subscriptionExpiry ||
@@ -15,14 +12,14 @@ module.exports = function checkPremiumFeature(req, res, next) {
     ) {
       return next();
     }
-    return res
-      .status(403)
-      .json({
-        error: {
-          code: "PREMIUM_REQUIRED",
-          message: "High priority tasks require active premium subscription",
-        },
-      });
+
+    // แก้ไข: โยน Error 403
+    const err = new Error(
+      "High priority tasks require active premium subscription"
+    );
+    err.statusCode = 403;
+    err.code = "PREMIUM_REQUIRED";
+    return next(err);
   }
   next();
 };
