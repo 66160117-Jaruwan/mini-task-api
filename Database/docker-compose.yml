@@ -8,7 +8,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: mini_task_mysql
-      MYSQL_USER: miniuser
+      MYSQL_USER: mini_task_user
       MYSQL_PASSWORD: minipassword
     ports:
       - "3306:3306"
