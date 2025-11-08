@@ -16,6 +16,16 @@ CREATE TABLE IF NOT EXISTS users (
   createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- ============================================
+-- BLACKLISTED TOKENS TABLE (Added by Person 2)
+-- ============================================
+CREATE TABLE IF NOT EXISTS blacklisted_tokens (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  token TEXT NOT NULL,
+  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_token (token(255))
+);
+
 -- ตาราง Tasks
 CREATE TABLE IF NOT EXISTS tasks (
   id INT AUTO_INCREMENT PRIMARY KEY,
