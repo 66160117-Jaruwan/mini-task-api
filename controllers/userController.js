@@ -45,3 +45,38 @@ exports.deleteUser = (req, res) => {
     res.json({ message: 'User deleted successfully' });
   });
 };
+
+// ดึงข้อมูลผู้ใช้ที่ login อยู่
+exports.getMe = (req, res) => {
+  // req.user จะถูกเพิ่มโดย authenticate middleware
+  const userId = req.user.id;
+  User.getById(userId, (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (results.length === 0) return res.status(404).json({ message: 'User not found' });
+    res.json(results[0]);
+  });
+};
+
+// อัปเดตข้อมูลผู้ใช้ที่ login อยู่
+exports.updateMe = (req, res) => {
+  const userId = req.user.id;
+  const data = req.body;
+  
+  // ป้องกันการอัปเดตข้อมูลที่ไม่ควรให้แก้ไข
+  delete data.password; // ไม่อนุญาตให้อัปเดต password ผ่าน endpoint นี้
+  delete data.role; // ไม่อนุญาตให้อัปเดตสิทธิ์ผู้ใช้
+  
+  User.update(userId, data, (err) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ message: 'Profile updated successfully' });
+  });
+};
+
+// ลบบัญชีผู้ใช้ที่ login อยู่
+exports.deleteMe = (req, res) => {
+  const userId = req.user.id;
+  User.delete(userId, (err) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ message: 'Your account has been deleted successfully' });
+  });
+};

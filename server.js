@@ -1,30 +1,23 @@
-const express = require("express");
-const dotenv = require("dotenv");
+const express = require('express');
+const dotenv = require('dotenv');
 const app = express();
-dotenv.config();
-const db = require("./config/db");
 
-// Middleware พื้นฐาน
+// Load environment variables
+dotenv.config();
+const db = require('./config/db');
+
 app.use(express.json());
 
-// นำเข้า "สารบัญ" หลัก (routes/index.js)
-const mainRoutes = require("./routes");
-
-// Route ทดสอบ
-app.get("/", (req, res) => {
-  res.send("Mini Task API Running...");
+app.get('/', (req, res) => {
+  res.send('Mini Task API Running...');
 });
+const userRoutes = require('./routes/userRoutes');
+const taskRoutes = require('./routes/taskRoutes');
 
-// ใช้งาน Routes ทั้งหมดผ่าน "สารบัญ"
-app.use(mainRoutes);
+app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/tasks', taskRoutes);
 
-// นำเข้า Error Handler กลาง
-const errorHandler = require("./middlewares/errorHandler");
 
-// ลงทะเบียน Error Handler (ต้องอยู่ล่างสุด)
-app.use(errorHandler);
-
-// เริ่มเซิร์ฟเวอร์
 app.listen(process.env.PORT || 8100, () => {
   console.log(`Server running on port ${process.env.PORT || 8100}`);
 });
