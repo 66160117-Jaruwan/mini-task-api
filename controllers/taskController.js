@@ -45,3 +45,20 @@ exports.deleteTask = (req, res) => {
     res.json({ message: 'Task deleted successfully' });
   });
 };
+
+// ถ้าไม่มี ให้เพิ่มเข้าไป
+exports.getPremiumTasks = async (req, res) => {
+  try {
+    // Logic สำหรับดึง premium tasks
+    res.json({ message: 'Premium tasks', user: req.user });
+  } catch (error) {
+    console.error('Get premium tasks error:', error);
+    res.status(500).json({
+      error: {
+        code: 'INTERNAL_ERROR',
+        message: 'An error occurred',
+        details: error.message
+      }
+    });
+  }
+};
