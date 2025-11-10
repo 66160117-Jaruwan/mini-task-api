@@ -1,11 +1,25 @@
 const express = require('express');
 const router = express.Router();
-const taskController = require('../controllers/taskController');
+const { verifyToken, isPremium } = require('../middlewares/auth');
+const { 
+  getAllTasks,
+  getTaskById,
+  createTask,
+  updateTask,
+  updateTaskStatus,
+  deleteTask,
+  getPremiumTasks
+} = require('../controllers/taskController');
 
-router.get('/', taskController.getAllTasks);
-router.get('/:id', taskController.getTaskById);
-router.post('/', taskController.createTask);
-router.put('/:id', taskController.updateTask);
-router.delete('/:id', taskController.deleteTask);
+// 🔹 Routes ต้อง login ก่อน
+router.get('/', verifyToken, getAllTasks);
+router.get('/:id', verifyToken, getTaskById);
+router.post('/', verifyToken, createTask);
+router.put('/:id', verifyToken, updateTask);
+router.patch('/:id/status', verifyToken, updateTaskStatus);
+router.delete('/:id', verifyToken, deleteTask);
+
+// 🔹 Routes สำหรับ premium เท่านั้น
+router.get('/premium', verifyToken, isPremium, getPremiumTasks);
 
 module.exports = router;

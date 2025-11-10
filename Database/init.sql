@@ -2,6 +2,10 @@
 CREATE DATABASE IF NOT EXISTS mini_task_mysql
 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+-- ให้สิทธิ์ mini_task_user
+GRANT ALL PRIVILEGES ON mini_task_mysql.* TO 'mini_task_user'@'%';
+FLUSH PRIVILEGES;
+
 USE mini_task_mysql;
 
 -- ตาราง Users
@@ -14,6 +18,16 @@ CREATE TABLE IF NOT EXISTS users (
   isPremium BOOLEAN DEFAULT FALSE,
   subscriptionExpiry DATETIME DEFAULT NULL,
   createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ============================================
+-- BLACKLISTED TOKENS TABLE (Added by Person 2)
+-- ============================================
+CREATE TABLE IF NOT EXISTS blacklisted_tokens (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  token TEXT NOT NULL,
+  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_token (token(255))
 );
 
 -- ตาราง Tasks
