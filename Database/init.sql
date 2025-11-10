@@ -2,6 +2,10 @@
 CREATE DATABASE IF NOT EXISTS mini_task_mysql
 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+-- ให้สิทธิ์ mini_task_user
+GRANT ALL PRIVILEGES ON mini_task_mysql.* TO 'mini_task_user'@'%';
+FLUSH PRIVILEGES;
+
 USE mini_task_mysql;
 
 -- ตาราง Users

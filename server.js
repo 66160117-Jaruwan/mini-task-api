@@ -1,23 +1,23 @@
 const express = require('express');
-const dotenv = require('dotenv');
+require('dotenv').config();
+
 const app = express();
 
-// Load environment variables
-dotenv.config();
-const db = require('./config/db');
-
+// Middleware
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.get('/', (req, res) => {
-  res.send('Mini Task API Running...');
-});
-const userRoutes = require('./routes/userRoutes');
+// Routes
+const authRoutes = require('./routes/authRoutes');
 const taskRoutes = require('./routes/taskRoutes');
+const userRoutes = require('./routes/userRoutes'); // เพิ่มบรรทัดนี้
 
-app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/tasks', taskRoutes);
+app.use('/api/v1/users', userRoutes); // เพิ่มบรรทัดนี้
 
-
-app.listen(process.env.PORT || 8100, () => {
-  console.log(`Server running on port ${process.env.PORT || 8100}`);
+// Start server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });

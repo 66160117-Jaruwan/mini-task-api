@@ -1,12 +1,14 @@
-// 3. routes/userRoutes.js
-const express = require("express");
+const express = require('express');
 const router = express.Router();
+const { verifyToken, isAdmin } = require('../middlewares/auth');
 const userController = require('../controllers/userController');
 
-router.get('/', userController.getAllUsers);
-router.get('/:id', userController.getUserById);
-router.post('/', userController.createUser);
-router.put('/:id', userController.updateUser);
-router.delete('/:id', userController.deleteUser);
+// User routes (ต้อง login)
+router.get('/me', verifyToken, userController.getMe);
+router.put('/me', verifyToken, userController.updateMe);
+router.delete('/me', verifyToken, userController.deleteMe);
+
+// Admin routes (ต้องเป็น admin)
+router.get('/', verifyToken, isAdmin, userController.getAllUsers);
 
 module.exports = router;
