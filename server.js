@@ -14,6 +14,7 @@ const userRoutes = require('./routes/userRoutes'); // เพิ่มบรร�
 
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/tasks', taskRoutes);
+app.use('/api/v2/tasks', taskRoutes);
 app.use('/api/v1/users', userRoutes); // เพิ่มบรรทัดนี้
 
 // Start server
