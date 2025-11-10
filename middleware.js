@@ -1,5 +1,10 @@
-const authenticate = require('./middleware/authenticate');
-const { authorize } = require('./middleware/authorize');
+// Import จากทั้งสองที่เพื่อความเข้ากันได้กับโค้ดเก่า
+const authenticate = require('./middlewares/authenticate');
+const { authorize } = require('./middlewares/authorize');
+
+// สำหรับโค้ดเก่าที่อาจยัง import จาก middleware/
+const authenticateOld = authenticate;
+const authorizeOld = authorize;
 // ==================== ERROR HANDLERS ====================
 // 404 Handler
 const notFoundHandler = (req, res) => {
