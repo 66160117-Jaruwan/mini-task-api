@@ -1,6 +1,4 @@
-// middlewares/idempotency.js
-const pool = require("../config/db"); // ⭐️ แก้ไข Path
-const crypto = require("crypto");
+const pool = require("../config/db");
 
 function hashBody(body) {
   const s = JSON.stringify(body || {});

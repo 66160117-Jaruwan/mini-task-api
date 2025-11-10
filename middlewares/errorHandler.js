@@ -1,19 +1,22 @@
-// middlewares/errorHandler.js
-const errorHandler = (err, req, res, next) => {
-  console.error(err.stack); // แสดง Error ใน console
+const authorize = (roles = []) => {
+  return (req, res, next) => {
+    if (!req.user) {
+      const err = new Error("Authentication required");
+      err.statusCode = 401;
+      err.code = "UNAUTHORIZED";
+      return next(err);
+    }
 
-  // 1. กำหนด statusCode (ถ้า err ไม่มี .statusCode ให้ใช้ 500)
-  const statusCode = err.statusCode || 500;
-
-  // 2. สร้าง Response format ตามข้อกำหนด
-  const errorResponse = {
-    status: "error",
-    code: err.code || (statusCode === 500 ? "INTERNAL_SERVER_ERROR" : "ERROR"),
-    message: err.message || "An unexpected error occurred",
+    if (!roles.includes(req.user.role)) {
+      const err = new Error(
+        "You do not have permission to perform this action"
+      );
+      err.statusCode = 403;
+      err.code = "ACCESS_DENIED";
+      return next(err);
+    }
+    next();
   };
-
-  // 3. ส่ง Response กลับไป
-  res.status(statusCode).json(errorResponse);
 };
 
-module.exports = errorHandler;
+module.exports = authorize;

@@ -1,15 +1,13 @@
-// 5. middlewares/authorize.js
 const authorize = (roles = []) => {
   return (req, res, next) => {
     if (!req.user) {
-      const err = new Error("Not authenticated");
+      const err = new Error("Authentication required");
       err.statusCode = 401;
       err.code = "UNAUTHORIZED";
       return next(err);
     }
 
     if (!roles.includes(req.user.role)) {
-      // แก้ไข: โยน Error 403
       const err = new Error(
         "You do not have permission to perform this action"
       );
